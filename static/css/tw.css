@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+*{
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar{
+	display: none
+}
+
+.ring-b{
+	@apply relative;
+}
+
+.ring-b::before{
+	content: '';
+	@apply absolute bottom-0 left-0 w-full rounded-full bg-blue-400 transition-all;
+}
+
+.input-form{
+}
+
+.click{
+	@apply relative;
+}
+
+.click::before{
+	content: '';
+	@apply block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-200 transition-all rounded-full -z-10;
+}
+
+.click:hover::before{
+	animation: click 1s;
+}
+
+.pop{
+	@apply relative overflow-hidden;
+}
+.pop::before{
+	content: '';
+	@apply block w-0 h-0 transition-all bg-gray-100 duration-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rounded-full;
+}
+
+.pop:hover::before{
+	@apply w-screen h-screen
+}
+
+@keyframes click{
+	0%{
+		width: 0;
+		height: 0;
+	}
+	100%{
+		@apply w-14 h-14 opacity-0;
+	}
+}

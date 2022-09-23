@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{ TITLE }}</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<link rel="stylesheet" href="{% static 'css/style.css' %}?{% now "%U" %}">
+		<link rel="stylesheet" href="{% static 'css/icon.css' %}">
+		<script src="{% static 'js/account/detail.js' %}?{% now "%U" %}" defer></script>
+		<meta name="theme-color" content="#000">
+	</head>
+	<body class="bg-gray-100">
+		<div class="h-[200vh] max-w-xl m-auto bg-white">
+
+			<!-- nav -->
+			<div id="nav" class="flex sticky top-0 left-0 items-center justify-between h-14 w-full px-3 z-50 bg-blue-400 duration-500 transition-all">
+				<button id="back" class="bg-black/50 w-8 h-8 rounded-full"><i class="fas fa-arrow-left text-white"></i></button>
+				<div>
+					<button class="bg-black/50 w-8 h-8 rounded-full"><i class="fal fa-magnifying-glass text-white"></i></button>
+					<button class="bg-black/50 w-8 h-8 rounded-full"><i class="far fa-ellipsis-vertical text-white"></i></button>
+				</div>
+			</div>
+			<!-- nav -->
+
+			<!-- cover -->
+			<div id="cover" class="bg-blue-400 w-full h-36 min-h-[3.5rem] max-h-36">
+				{% if profile.cover_photo %}
+				<img class="w-full h-full object-cover" src="{{ profile.cover_photo.url }}"
+				{% endif %}
+			</div>
+			<!-- cover -->
+			
+			<!-- content -->
+			<div class="px-3 w-full">
+				<div class="h-14 w-full flex items-center justify-end relative">
+					<div id="profile" class="h-24 w-24 bg-gray-300 rounded-full ring ring-white absolute bottom-3 left-0 overflow-hidden">
+						{% if profile.photo %}
+						<img class="w-full h-full object-cover" src="{{ profile.photo.url }}">
+						{% endif %}
+					</div>
+					<button class="border-[1px] px-4 py-1 rounded-full font-bold hover:bg-gray-100">Set up profile</button>
+				</div>
+				<div class="mt-1 mb-3">
+					<h2 class="font-bold text-2xl">{{ request.user.username }}</h2>
+					<h4 class="font-bold text-gray-500">{{ profile.name }}</h4>
+				</div>
+				<div class="text-gray-500">
+					<small><i class="far fa-calendar"></i> Joined {{ request.user.date_joined|date:"M Y" }}</small>
+				</div>
+				<div class="flex items-center text-gray-500 gap-3 my-2 text-xs">
+					<h6>
+						<span class="font-bold text-black">{{ profile.following|length }}</span> Following
+					</h6>
+					<h6>
+						<span class="font-bold text-black">{{ profile.followers|length }}</span> Followers
+					</h6>
+				</div>
+
+				<!-- tab -->
+				<div class="overflow-hidden">
+					<nav class="w-full flex items-center justify-evenly child:h-10 child:flex child:items-center child:justify-center [&] border-b child:text-sm">
+						<label>
+							<input class="hidden peer" type="radio" name="tab" checked>
+							<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 text-gray-500 peer-checked:text-black font-bold">
+								Tweets
+							</div>
+						</label>
+						<label>
+							<input class="hidden peer" type="radio" name="tab">
+							<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 peer-checked:text-black text-gray-500 font-bold">
+								Tweets & replies
+							</div>
+						</label>
+						<label>
+							<input class="hidden peer" type="radio" name="tab">
+							<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 peer-checked:text-black text-gray-500 font-bold">
+								Media
+							</div>
+						</label>
+						<label>
+							<input class="hidden peer" type="radio" name="tab">
+							<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 peer-checked:text-black text-gray-500 font-bold">
+								Likes
+							</div>
+						</label>
+					</nav>
+					<ul id="tabs" class="w-full child:w-full flex child:flex-shrink-0 transition-all">
+						<li>Elit inventore recusandae sapiente doloribus aut Sequi soluta voluptatibus neque a harum Amet quae facere ullam consequatur repellat? Blanditiis obcaecati provident reiciendis porro soluta Veniam ea nemo obcaecati sint eos?</li>
+						<li>Consectetur eum corporis excepturi in commodi iste Ab cupiditate repudiandae</li>
+						<li>Elit quidem molestiae dolor animi</li>
+						<li></li>
+					</ul>
+				</div>
+				<!-- tab -->
+
+			</div>
+			<!-- content -->
+		</div>
+	</body>
+</html>

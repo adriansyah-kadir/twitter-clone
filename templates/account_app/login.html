@@ -1,0 +1,28 @@
+{% extends 'skeleton/base.html' %}
+{% load core %}
+{% block utils %}
+<a href="{% url 'account:create' %}?{{ request.GET.urlencode }}" class="text-xs hover:text-blue-500" title="register account"><i class="fal fa-address-card"></i></a>
+{% endblock %}
+{% block body %}
+<div class="p-5 h-full">
+	<h1 class="text-2xl font-bold">To get started, first enter your username and password</h1>
+	<form action="{% url 'account:login' %}" class="h-full flex flex-col gap-3 pt-40 child:flex-shrink-0 items-center" method="post">
+		<label class="relative h-12 w-full max-w-sm block">
+			<input class="outline-none ring-[1.5px] ring-gray-300 focus:ring-[2px] focus:ring-blue-500 rounded-sm transition-all h-full w-full px-3 peer" placeholder=" " name="username" value="{{ input.username }}">
+			<span class="absolute peer-placeholder-shown:top-1/2 top-0 -translate-y-1/2 left-3 bg-white px-1 peer-placeholder-shown:text-lg text-xs text-gray-500 peer-focus:text-blue-500 transition-all">Name</span>
+		</label>
+		<label class="relative h-12 w-full max-w-sm block">
+			<input class="outline-none ring-[1.5px] ring-gray-300 focus:ring-[2px] focus:ring-blue-500 rounded-sm transition-all h-full w-full px-3 peer" placeholder=" " name="password" value="{{ input.password }}">
+			<span class="absolute peer-placeholder-shown:top-1/2 top-0 -translate-y-1/2 left-3 bg-white px-1 peer-placeholder-shown:text-lg text-xs text-gray-500 peer-focus:text-blue-500 transition-all">Password</span>
+		</label>
+		<div class="g-recaptcha mb-40" data-sitekey="{% recaptcha_site_key %}"></div>
+		<div class="absolute -translate-y-full bottom-0 left-0 z-[999] bg-white border-t w-full p-5">
+			<div class="flex items-center justify-between">
+				<button type="reset" class="rounded-full bg-white border w-fit px-4 py-1">Clear</button>
+				<button class="rounded-full bg-black text-white w-fit px-4 py-1">Next</button>
+			</div>
+		</div>
+	</form>
+</div>
+<script src="https://www.google.com/recaptcha/api.js" async defer> </script>
+{% endblock %}

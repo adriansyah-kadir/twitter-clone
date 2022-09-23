@@ -1,0 +1,15 @@
+{
+	"name": "social",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"watch": "npx tailwindcss -i ./static/css/tw.css -o ./static/css/style.css --watch"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"tailwindcss": "^3.1.8"
+	}
+}

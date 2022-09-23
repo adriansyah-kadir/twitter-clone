@@ -1,0 +1,40 @@
+<input type="checkbox" class="hidden peer" id="tweet-nav">
+<ul id="tweet-btns" class="absolute bottom-full left-0 rounded-full  peer-checked:z-50 peer-checked:[&>div.hidden]:child:block child:w-14 child:h-14 child:flex child:items-center child:justify-center peer-checked:[&>.small]:child:scale-75 peer-checked:[&>*:not(.small)]:child:scale-100 text-white peer-checked:[&>button.-rotate-90]:child:rotate-0">
+	<li class="relative">
+		<div class="absolute top-1/2 -left-3 -translate-y-1/2 -translate-x-full items-center justify-center text-black hidden">Video</div>
+		<button class="w-full h-full scale-0 bg-white rounded-full flex transition-all small items-center justify-center -rotate-90 shadow-md">
+			<i class="fal fa-file-video text-blue-500 text-2xl"></i>
+		</button>
+	</li>
+	<li class="relative">
+		<div class="absolute top-1/2 -left-3 -translate-y-1/2 -translate-x-full items-center justify-center text-black hidden">Photo</div>
+		<button class="w-full h-full scale-0 bg-white rounded-full flex transition-all small items-center justify-center -rotate-90 shadow-md">
+			<i class="fal fa-file-image text-blue-500 text-2xl"></i>
+		</button>
+	</li>
+	<li class="relative">
+		<div class="absolute top-1/2 -left-3 -translate-y-1/2 -translate-x-full items-center justify-center text-black hidden">Tweet</div>
+		<button data-url="{% url 'tweet:create' %}" id="tweet-btn" class="w-full h-full scale-0 bg-blue-500 rounded-full flex transition-all items-center justify-center -rotate-90 shadow-md small">
+			<i class="fal fa-feather"></i>
+		</button>
+	</li>
+</ul>
+<label for="tweet-nav" class="w-14 h-14 rounded-full bg-blue-500 shadow-md flex items-center justify-center rotate-0 peer-checked:rotate-90 transition-all">
+	<i class="fal fa-plus text-white text-2xl"></i>
+</label>
+<script>
+	let tweetNav = document.querySelector("#tweet-nav")
+	tweetNav.onchange = ()=>{
+			if (tweetNav.checked){
+					document.querySelector("#content").style.filter = "blur(4px)"
+				}else{
+					document.querySelector("#content").style.filter = "blur(0px)"
+					}
+		}
+	let btns = document.querySelectorAll("#tweet-btns button")
+	btns.forEach(e=>{
+			e.onclick = ()=>{
+					location.assign(e.data['url'])
+				}
+		})
+</script>

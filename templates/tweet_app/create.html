@@ -1,0 +1,184 @@
+{% extends 'skeleton/tulang.html' %}
+{% block body %}
+<div class="w-full bg-gray-100">
+	<div class="max-w-xl w-full m-auto bg-white h-screen relative">
+		<form id="content" class="w-full px-3 py-3" method="post" enctype="multipart/form-data" action="{% url 'tweet:create' %}">
+			<input name="mentions" type="hidden" value="[]">
+			<nav class="flex items-center justify-between peer-placeholder-shown:bg-blue-300">
+				<button onclick="location.assign('/'); event.preventDefault()"><i class="fas fa-arrow-left"></i></button>
+				<button disabled type="submit" class="bg-blue-300 px-4 py-1 rounded-full text-white">Tweet</button>
+			</nav>
+			<div class="flex gap-3 my-5">
+				<div class="w-14 h-14 rounded-full bg-red-50 flex-shrink-0"></div>
+				<div class="w-full">
+					<textarea name="text" class="outline-none resize-none overflow-scroll min-h-[120px] max-h-[200px] w-full placeholder:text-xl placeholder:text-gray-500" placeholder="What's happening?"></textarea>
+					<!-- users -->
+					<div id="users" class="w-full">
+					</div>
+					<!-- users -->
+					<div>
+						<div>
+							<output onclick="open_select()" class="font-bold text-blue-400 text-sm" id="reply_mode_output"></output>
+							<select class="hidden" name="{{ form.reply_mode.name }}">
+								{% for option in form.reply_mode.field.choices %}
+								<option value="{{ option.0 }}">{{ option.1 }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<hr class="my-2">
+						<div class="flex gap-4">
+							<label>
+								<i class="fal fa-image text-blue-400 text-lg"></i>
+								<input onchange="btn.disabled=false" type="file" class="hidden" name="image">
+							</label>
+							<label>
+								<i class="fal fa-video text-blue-400 text-lg"></i>
+								<input onchange="btn.disabled=false" type="file" class="hidden" name="video">
+							</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		<!-- reply_mode options -->
+		<div id="reply_mode_options" class="absolute bottom-0 left-0 w-full bg-white shadow-md border hidden flex-col rounded-[20px_20px_0_0]">
+			<div class="m-3">
+				<h6 class="font-bold">Who can reply?</h6>
+				<small class="text-gray-500">Choose who can reply to this Tweet. Anyone mentioned can always reply.</small>
+			</div>
+			<div class="flex flex-col">
+				{% for option in form.reply_mode.field.choices %}
+				<label class="text-sm text-gray-600 flex items-center hover:bg-gray-100 p-3">
+					<i class="fas fa-circle-x mr-5 text-4xl text-blue-400"></i>{{ option.1 }}
+					<input class="hidden" name="option" type="radio" value="{{ forloop.counter0 }}" onchange="change_selected(reply_mode, this.value)">
+				</label>
+				{% endfor %}
+			</div>
+			<button onclick="close_select()" class="border rounded-full py-2 w-auto m-3 hover:bg-gray-100">Cancel</button>
+		</div>
+		<!-- reply_mode options -->
+	</div>
+</div>
+<!-- dummy el -->
+<div class="hidden">
+	<div class="bg-blue-400 flex blur-sm bg-gray-100 border-t"></div>
+	<div class="w-full">
+		{% for profile in profiles %}
+		<div class="hover:bg-gray-100 p-2 flex items-center gap-3">
+			<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+				{% if profile.photo %}
+				<img class="w-full h-full object-cover" src="{{ profile.photo.url }}">
+				{% endif %}
+			</div>
+			<div class="w-full">
+				<h5 class="font-bold">{{ profile.user.username }}</h5>
+				<span class="text-gray-500">{{ profile.name }}</span>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+<!-- dummy el -->
+<script>
+	let text = document.querySelector("[name='text']")
+	let btn = document.querySelector("[type='submit']")
+	text.oninput=()=>{
+			watch()
+			auto_grow(text)
+			if(text.value){
+					btn.classList.replace('bg-blue-300', 'bg-blue-400')
+					btn.disabled = false
+				}else{
+						btn.classList.replace('bg-blue-400', 'bg-blue-300')
+						btn.disabled = true
+					}
+		}
+	function auto_grow(e){
+			e.style.height = "5px"
+			e.style.height = `${e.scrollHeight}px`
+		}
+
+	let reply_mode = document.getElementsByName("{{ form.reply_mode.name }}")[0]
+	let options = reply_mode.querySelectorAll('option')
+	let output = document.getElementById('reply_mode_output')
+	reply_mode.onchange = ()=>{
+			update_select(reply_mode, output)
+		}
+	function update_select(select, output){
+			let options = select.querySelectorAll('option')
+			options.forEach(e=>{
+					if(e.value == reply_mode.value){
+							output.value = e.innerHTML
+						}
+				})
+		}
+	update_select(reply_mode, output)
+	function open_select(){
+			document.querySelector("#reply_mode_options").classList.replace("hidden", "flex")
+			document.getElementById("content").classList.add("blur-sm")
+		}
+
+	function change_selected(select, val){
+			close_select()
+			select.selectedIndex = parseInt(val)
+			update_select(select, output)
+		}
+
+	function close_select(){
+			document.querySelector("#reply_mode_options").classList.replace("flex", "hidden")
+			document.getElementById("content").classList.remove("blur-sm")
+	}
+
+	let name = null
+
+	function watch(){
+			let chr = text.value[text.value.length - 1]
+			if (chr == "@"){
+				name = ""
+				}else if ((""+chr).match(/\s/)){
+						document.getElementById("users").innerHTML = ""
+		document.getElementById("users").classList.remove('border-t')
+					}
+			else if (name != null){
+					name+=chr
+					fetch(`{% url 'profile:search' %}?name=@${name}`).then(res=>{
+							res.json().then(val=>{
+									document.getElementById("users").innerHTML = ""
+									for(let v of val.profiles){
+											console.log(add_user(v))
+										}
+								})
+						})
+				}
+		}
+	function add_user(profile){
+			let template = `
+				<div onclick='add_mention(${profile.id}, "${profile.name}")' class="hover:bg-gray-100 p-2 flex items-center gap-3">
+			<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+				${ profile.photo ? `<img class="w-full h-full object-cover" src="${ profile.photo }">` : "" } 
+			</div>
+			<div class="w-full">
+				<h5 class="font-bold">${ profile.user.username }</h5>
+				<span class="text-gray-500">${ profile.name }</span>
+			</div>
+		</div>
+			`
+		document.getElementById("users").innerHTML += template
+		document.getElementById("users").classList.add('border-t')
+	}
+
+	function add_mention(id, nameprofile){
+			let mentions = document.querySelector("[name='mentions']")
+			let v = JSON.parse(mentions.value)
+			if (v.indexOf(id) < 0){
+					v.push(id)
+				let r = JSON.stringify(v)
+					mentions.value = r
+				}
+			text.value = text.value.replace(/@[a-zA-Z0-9]*$/, `${nameprofile}`)
+		document.getElementById("users").innerHTML = ''
+		document.getElementById("users").classList.remove('border-t')
+		text.focus()
+	}
+</script>
+{% endblock %}

@@ -7,7 +7,7 @@ import os
 
 
 def media_directory_path(instance, filename):
-    return os.path.join("post", str(instance.post.id), filename)
+    return os.path.join("post", str(instance.tweet.id), filename)
 
 
 User = get_user_model()
@@ -29,6 +29,16 @@ class Tweet(models.Model):
     text = models.TextField(null=True, blank=True)
     likes = models.ManyToManyField(User, "post_likes")
     shares = models.ManyToManyField(User, "post_shares")
+    mention = models.ManyToManyField(User, 'tweet_mentions', blank=True)
+    reply_mode = models.CharField(
+        max_length=10,
+        choices=(
+            ('everyone', 'Everyone can reply'),
+            ('following', 'People you follow'),
+            ('mentioned', 'Only people you mention')
+        ),
+        default='everyone'
+    )
 
 
 class Comment(models.Model):
@@ -46,4 +56,4 @@ class Reply(models.Model):
 class Media(models.Model):
     tweet = models.ForeignKey(Tweet, models.CASCADE)
     file = models.FileField(upload_to=media_directory_path)
-    filetype = models.CharField(max_length=20)
+    content_type = models.CharField(max_length=20)

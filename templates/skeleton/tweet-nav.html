@@ -1,5 +1,5 @@
 <input type="checkbox" class="hidden peer" id="tweet-nav">
-<ul id="tweet-btns" class="absolute bottom-full left-0 rounded-full  peer-checked:z-50 peer-checked:[&>div.hidden]:child:block child:w-14 child:h-14 child:flex child:items-center child:justify-center peer-checked:[&>.small]:child:scale-75 peer-checked:[&>*:not(.small)]:child:scale-100 text-white peer-checked:[&>button.-rotate-90]:child:rotate-0">
+<ul id="tweet-btns" class="absolute bottom-full left-0 rounded-full  peer-checked:z-50 peer-checked:[&>div.hidden]:child:block child:w-14 child:h-14 child:flex child:items-center child:justify-center peer-checked:[&>.small]:child:scale-75 peer-checked:[&>*:not(.small)]:child:scale-100 text-white peer-checked:[&>button.-rotate-90]:child:rotate-0 h-0 overflow-hidden peer-checked:h-fit transition-all peer-checked:overflow-visible">
 	<li class="relative">
 		<div class="absolute top-1/2 -left-3 -translate-y-1/2 -translate-x-full items-center justify-center text-black hidden">Video</div>
 		<button class="w-full h-full scale-0 bg-white rounded-full flex transition-all small items-center justify-center -rotate-90 shadow-md">
@@ -34,7 +34,7 @@
 	let btns = document.querySelectorAll("#tweet-btns button")
 	btns.forEach(e=>{
 			e.onclick = ()=>{
-					location.assign(e.data['url'])
+					location.assign(e.dataset.url)
 				}
 		})
 </script>

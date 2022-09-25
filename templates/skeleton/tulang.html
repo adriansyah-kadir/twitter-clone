@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{ PAGE_TITLE }}</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		{% block head %}
+		{% endblock %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}?{% now "%U" %}">
+		<link rel="stylesheet" href="{% static 'css/icon.css' %}">
+	</head>
+	<body>
+		{% block body %}
+		{% endblock %}
+	</body>
+</html>

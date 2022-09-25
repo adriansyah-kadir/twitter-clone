@@ -3,12 +3,12 @@
 @tailwind utilities;
 @tailwind variants;
 
-*{
+.no-scrollbar{
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 }
 
-*::-webkit-scrollbar{
+.no-scrollbar::-webkit-scrollbar{
 	display: none
 }
 

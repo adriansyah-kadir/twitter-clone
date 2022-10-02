@@ -12,6 +12,11 @@
 				<div class="w-14 h-14 rounded-full bg-red-50 flex-shrink-0"></div>
 				<div class="w-full">
 					<textarea name="text" class="outline-none resize-none overflow-scroll min-h-[120px] max-h-[200px] w-full placeholder:text-xl placeholder:text-gray-500" placeholder="What's happening?"></textarea>
+					<!-- image -->
+					<div id="image-div" class="hidden bg-blue-100">
+						<img class="aspect-video object-cover">
+					</div>
+					<!-- image -->
 					<!-- users -->
 					<div id="users" class="w-full">
 					</div>
@@ -29,7 +34,7 @@
 						<div class="flex gap-4">
 							<label>
 								<i class="fal fa-image text-blue-400 text-lg"></i>
-								<input onchange="btn.disabled=false" type="file" class="hidden" name="image">
+								<input onchange="btn.disabled=false;imgDiv.querySelector('img').src=window.URL.createObjectURL(this.files[0]);imgDiv.classList.remove('hidden')" type="file" class="hidden" name="image">
 							</label>
 							<label>
 								<i class="fal fa-video text-blue-400 text-lg"></i>
@@ -80,6 +85,7 @@
 </div>
 <!-- dummy el -->
 <script>
+	let imgDiv = document.getElementById('image-div')
 	let text = document.querySelector("[name='text']")
 	let btn = document.querySelector("[type='submit']")
 	text.oninput=()=>{
@@ -141,7 +147,7 @@
 					}
 			else if (name != null){
 					name+=chr
-					fetch(`{% url 'profile:search' %}?name=@${name}`).then(res=>{
+					fetch(`{% url 'profile:search' %}?name=${name}`).then(res=>{
 							res.json().then(val=>{
 									document.getElementById("users").innerHTML = ""
 									for(let v of val.profiles){
@@ -153,13 +159,13 @@
 		}
 	function add_user(profile){
 			let template = `
-				<div onclick='add_mention(${profile.id}, "${profile.name}")' class="hover:bg-gray-100 p-2 flex items-center gap-3">
+				<div onclick='add_mention(${profile.id}, "${profile.user.username}")' class="hover:bg-gray-100 p-2 flex items-center gap-3">
 			<div class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
 				${ profile.photo ? `<img class="w-full h-full object-cover" src="${ profile.photo }">` : "" } 
 			</div>
 			<div class="w-full">
-				<h5 class="font-bold">${ profile.user.username }</h5>
-				<span class="text-gray-500">${ profile.name }</span>
+				<h5 class="font-bold">${ profile.name }</h5>
+				<span class="text-gray-500">@${ profile.user.username }</span>
 			</div>
 		</div>
 			`
@@ -175,7 +181,7 @@
 				let r = JSON.stringify(v)
 					mentions.value = r
 				}
-			text.value = text.value.replace(/@[a-zA-Z0-9]*$/, `${nameprofile}`)
+			text.value = text.value.replace(/@[a-zA-Z0-9]*$/, `@${nameprofile}`)
 		document.getElementById("users").innerHTML = ''
 		document.getElementById("users").classList.remove('border-t')
 		text.focus()

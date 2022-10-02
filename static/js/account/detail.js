@@ -34,7 +34,8 @@ let nav = document.getElementById("nav")
 let observer = new IntersectionObserver((entries, observer) => {
 	for (const entry of entries) {
 		if (entry.target == cover && entry.isIntersecting) {
-			nav.style.background = 'rgb(96 165 250 / var(--tw-bg-opacity))'
+			nav.style.background = 'transparent'
+			'rgb(96 165 250 / var(--tw-bg-opacity))'
 		} else {
 			nav.style.background = 'black'
 		}

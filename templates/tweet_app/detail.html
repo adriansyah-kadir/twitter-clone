@@ -1,0 +1,57 @@
+{% extends 'skeleton/tulang.html' %}
+{% block body %}
+<div class="bg-gray-300">
+	<div class="max-w-xl m-auto bg-white min-h-screen">
+		<nav class="sticky w-full top-0 left-0 p-3 backdrop-blur-md flex gap-10">
+			<button onclick="history.back()"><i class="fas fa-arrow-left"></i></button>
+			<div>
+				<h2 class="font-bold text-xl">Tweet</h2>
+			</div>
+		</nav>
+		<div class="px-3">
+			<div class="py-3 flex gap-3 items-center">
+				<div class="w-16 h-16 rounded-full overflow-hidden bg-gray-300 flex items-center justify-center ring-[1px] flex-shrink-0">
+					{% if tweet.user.profile.photo %}
+					<img class="w-full h-full object-cover" src="{{ tweet.user.profile.photo.url }}">
+					{% else %}
+					<i class="fas fa-user text-white text-3xl"></i>
+					{% endif %}
+				</div>
+				<div class="flex items-center justify-between w-full">
+					<div>
+						<a href="{% url 'profile:detail' tweet.user.profile.id %}">
+							<h3 class="font-bold text-xl">{{ tweet.user.profile.name }}</h3>
+							<h6 class="text-gray-500">@{{ tweet.user.username }}</h6>
+						</a>
+					</div>
+					<button><i class="fal fa-ellipsis text-xl"></i></button>
+				</div>
+			</div>
+			<p class="text-xl">
+			{{ tweet.text }}
+			</p>
+			{% if tweet.media_set.count %}
+			<div class="py-3">
+				{% for media in tweet.media_set.all %}
+					{% if media.content_type == "image/jpeg" or "image/png" %}
+					<div class="w-full rounded-xl max-h-80 overflow-hidden">
+						<img class="w-full h-full object-cover" src="{{ media.file.url }}">
+					</div>
+					{% endif %}			
+				{% endfor %}
+			</div>
+			{% endif %}
+			<div class="p-3 flex items-center gap-1 text-gray-500">
+				<span>
+					{{ tweet.created_at|date:"g:i A" }}
+				</span>
+				<div class="border rounded-full border-gray-400"></div>
+				<span>
+					{{ tweet.created_at|date:"M d, o" }}
+				</span>
+			</div>
+			<div class="h-10 w-full border-y"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'skeleton/tulang.html' %}
+{% block body %}
+<div class="bg-gray-100">
+	<div class="max-w-xl m-auto bg-white h-screen">
+		<div class="w-full flex justify-center h-10 items-center">
+			<a href="/"><i class="fab fa-twitter text-blue-500 text-xl"></i></a>
+		</div>
+		<div class="p-3">
+			<h5 class="font-bold text-2xl">Create your profile</h5>
+			<form method="post" action="{% url 'profile:create' %}" enctype="multipart/form-data">
+				<div class="w-full bg-gray-400 h-40 flex items-center justify-center">
+					<label class="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center">
+						<input name="cover_photo" type="file" class="hidden">
+						<i class="fal fa-camera text-white text-xl"></i>
+					</label>
+				</div>
+				<div class="relative h-10 mb-5">
+					<div class="w-20 h-20 ring-white ring bg-gray-300 rounded-full absolute bottom-0 left-5 flex items-center justify-center">
+						<label class="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center">
+							<input name="cover_photo" type="file" class="hidden">
+							<i class="fal fa-camera text-white text-xl"></i>
+						</label>
+					</div>
+				</div>
+				<label class="ring-[1px] ring-gray-300 hover:ring-[1.5px] hover:ring-blue-400  py-4 px-2 rounded-md relative w-full block">
+					<input name="name" type="text" maxlength="20" class="outline-none peer mt-2 placeholder-shown:mt-0" placeholder=" " required>
+					<span class="absolute left-2 top-2 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 transition-all peer-placeholder-shown:text-lg text-sm text-blue-500 peer-placeholder-shown:text-gray-500">Name</span>
+				</label>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	function change_profile_photo(f){
+			let photo = document.getElementById('photo')
+			let url = URL.createObjectURL(f)
+			photo.innerHTML = `<img class="w-full h-full object-cover" src=${url}>`
+		}
+
+	function change_size(el){
+			alert(el)
+		}
+</script>
+{% endblock %}

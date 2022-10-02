@@ -1,18 +1,19 @@
 from django.shortcuts import render, reverse
 from django.http import response, request
-from django.contrib.auth import decorators
-from . import models
+from . import models, decorators
 
 # Create your views here.
 
 
-@decorators.login_required
+@decorators.profile_required
 def index(req: request.HttpRequest):
     ctx = {}
+    tweets = models.Tweet.objects.all()
+    ctx['tweets'] = tweets
+    ctx['profile'] = req.user.profile
     return render(req, "core/index.html", ctx)
 
 
-@decorators.login_required
 def search(req: request.HttpRequest):
     ctx = {}
     name = req.GET.get('name')

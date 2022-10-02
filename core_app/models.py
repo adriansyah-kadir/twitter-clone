@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -5,13 +6,15 @@ import os
 
 # Create your models here.
 
-
 def media_directory_path(instance, filename):
     return os.path.join("post", str(instance.tweet.id), filename)
 
 
 User = get_user_model()
 
+class Relation(models.Model):
+    follower = models.ForeignKey(User, models.CASCADE, related_name='follower_set')
+    following = models.ForeignKey(User, models.CASCADE, related_name='following_set')
 
 class Profile(models.Model):
     user = models.OneToOneField(User, models.CASCADE)
@@ -19,17 +22,29 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to="photo", null=True, blank=True)
     cover_photo = models.ImageField(upload_to="photo", null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
-    followers = models.ManyToManyField("self", blank=True)
-    following = models.ManyToManyField("self", blank=True)
-    date_of_birth = models.DateTimeField()
+    date_of_birth = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    @property
+    def following(self):
+        return User.objects.filter(
+            id__in=[relation.following.id for relation in Relation.objects.filter(follower=self.user)]
+        )
+
+    @property
+    def followers(self):
+        return User.objects.filter(
+            id__in=[relation.follower.id for relation in Relation.objects.filter(following=self.user)]
+        )
 
 
 class Tweet(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     text = models.TextField(null=True, blank=True)
-    likes = models.ManyToManyField(User, "post_likes")
-    shares = models.ManyToManyField(User, "post_shares")
-    mention = models.ManyToManyField(User, 'tweet_mentions', blank=True)
+    likes = models.ManyToManyField(User, "posts_liked")
+    shares = models.ManyToManyField(User, "posts_shared")
+    mentions = models.ManyToManyField(User, 'tweet_mentions', blank=True)
     reply_mode = models.CharField(
         max_length=10,
         choices=(
@@ -39,7 +54,16 @@ class Tweet(models.Model):
         ),
         default='everyone'
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        ordering = ['-created_at']
 
+    def liked_by(self, user):
+        return self.likes.filter(id=user.id).first() != None
+
+    def time_passed(self):
+        delta = self.created_at - timezone.now()
 
 class Comment(models.Model):
     tweet = models.ForeignKey(Tweet, models.CASCADE)

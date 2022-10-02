@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ["*"]
 
 RECAPTCHA_SECRET_KEY="6LcE-RciAAAAAM0RsiMkvy2vnGVlQkXNCM_joRsn"
 RECAPTCHA_SITE_KEY="6LcE-RciAAAAALFwiqltCwZCYqBBPE3b6oVi0oev"
+PROFILE_URL='/profile/create/'
 
 
 # Application definition
@@ -40,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
+    "django.contrib.humanize",
     "core_app"
 ]
 

@@ -1,16 +1,16 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls.base import reverse
 from django.views import View
-from django.contrib.auth import mixins
+from django.contrib.auth import decorators
 from django.http import request, response
 from . import forms
-from core_app import models
+from core_app import models, mixins
 import json
 import re
 
 # Create your views here.
 
-class Create(mixins.LoginRequiredMixin, View):
+class Create(mixins.ProfileRequired, View):
     template_name = "tweet_app/create.html"
     def get(self, req: request.HttpRequest, *args, **kwargs):
         ctx = {}
@@ -59,8 +59,34 @@ class Create(mixins.LoginRequiredMixin, View):
                 file=video,
                 content_type=video.content_type
             )
-        tweet.mention.add(*mentions)
+        tweet.mentions.add(*mentions)
         tweet.save()
         if image: image.save()
         if video: video.save()
         return redirect(reverse('index'))
+
+class Detail(mixins.ProfileRequired, View):
+    template_name = 'tweet_app/detail.html'
+    def get(self, req: request.HttpRequest, *args, **kwargs):
+        ctx = {}
+        ctx['tweet'] = get_object_or_404(
+            models.Tweet,
+            id=kwargs.get('pk')
+        )
+        return render(req, self.template_name, ctx)
+
+@decorators.login_required
+def like(req: request.HttpRequest, *args, **kwargs):
+    ctx = {}
+    tweet = get_object_or_404(
+        models.Tweet,
+        pk=kwargs.get('pk')
+    )
+    if tweet.likes.filter(id=req.user.id):
+        tweet.likes.remove(req.user)
+        ctx['action'] = 'remove'
+    else:
+        tweet.likes.add(req.user)
+        ctx['action'] = 'add'
+    ctx['success'] = True
+    return response.JsonResponse(ctx)

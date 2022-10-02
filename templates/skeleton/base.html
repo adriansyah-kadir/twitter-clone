@@ -30,8 +30,8 @@
 									</div>
 									<div class="my-2 flex items-center justify-between">
 										<div>
-											<h3 class="font-bold text-xl">{{ request.user.username }}</h3>
-											<h5 class="text-gray-500">{{ request.user.profile.name }}</h5>
+											<h3 class="font-bold text-xl">{{ request.user.profile.name }}</h3>
+											<h5 class="text-gray-500">@{{ request.user.username }}</h5>
 										</div>
 										<label class="hover:cursor-pointer" for="account-utils"><i class="fas fa-angle-down"></i></label>
 									</div>
@@ -53,12 +53,12 @@
 											{% if request.user.profile.photo %}
 											<img class="w-full h-full object-cover" src="{{ request.user.profile.photo.url }}">
 											{% else %}
-											<i class="fas fa-user text-4xl"></i>
+											<i class="fas fa-user text-2xl text-white"></i>
 											{% endif %}
 										</div>
 										<div>
-											<h3 class="font-bold text-xl">{{ request.user.username }}</h3>
-											<h5 class="text-gray-500">{{ request.user.profile.name }}</h5>
+											<h3 class="font-bold text-xl">{{ request.user.profile.name }}</h3>
+											<h5 class="text-gray-500">{{ request.user.username }}</h5>
 										</div>
 									</div>
 									<i class="fas fa-circle-check text-green-400"></i>

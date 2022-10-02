@@ -1,0 +1,55 @@
+{% extends 'skeleton/tulang.html' %}
+{% block body %}
+<div class="bg-gray-100">
+	<div class="max-w-xl m-auto bg-white h-screen">
+		<div class="w-full flex justify-center h-10 items-center">
+			<a href="/"><i class="fab fa-twitter text-blue-500 text-xl"></i></a>
+		</div>
+		<div class="p-3">
+			<h5 class="font-bold text-2xl">Create your profile</h5>
+			<form method="post" action="{% url 'profile:create' %}" enctype="multipart/form-data">
+				<div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center bg-gray-200 ring-[1px] m-auto my-2" id="photo">
+					<i class="fas fa-user text-4xl text-white"></i>
+				</div>
+				<label>
+					<h3 class="font-bold my-1">profile photo :</h3>
+					<input onchange="change_profile_photo(this.files[0])" type="file" name="photo">
+				</label>
+				<label>
+					<h3 class="font-bold my-1">cover photo :</h3>
+					<input onchange="change_cover_photo(this.files[0])" type="file" name="cover_photo">
+				</label>
+				<label class="[&>div]:hover:ring [&>div]:hover:ring-blue-400">
+					<h3 class="font-bold my-1">nickname :</h3>
+					<div class="h-10 flex rounded-lg overflow-hidden ring-[1px] ring-gray-300 transition-all">
+						<div class="w-10 h-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+							<i class="fal fa-at"></i>
+						</div>
+						<input class="outline-none px-2 h-full w-full" name="name" placeholder="nickname" value="{{ request.user.username }}">
+					</div>
+				</label>
+				<label>
+					<h3 class="font-bold my-1">bio :</h3>
+					<textarea onchange="change_size(this)" class="w-full outline-none ring-[1px] focus:ring-blue-400 ring-gray-300 rounded-lg p-2"></textarea>
+				</label>
+				<label>
+					<h3 class="font-bold my-1">date of birth :</h3>
+					<input type="date" name="date_of_birth">
+				</label>
+				<button>send</button>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+	function change_profile_photo(f){
+			let photo = document.getElementById('photo')
+			let url = URL.createObjectURL(f)
+			photo.innerHTML = `<img class="w-full h-full object-cover" src=${url}>`
+	}
+
+	function change_size(el){
+			alert(el)
+	}
+</script>
+{% endblock %}

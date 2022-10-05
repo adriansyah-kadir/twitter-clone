@@ -8,7 +8,7 @@ from . import models, decorators
 @decorators.profile_required
 def index(req: request.HttpRequest):
     ctx = {}
-    tweets = models.Tweet.objects.all()
+    tweets = models.Tweet.objects.filter(reply_to=None)
     ctx['tweets'] = tweets
     ctx['profile'] = req.user.profile
     return render(req, "core/index.html", ctx)

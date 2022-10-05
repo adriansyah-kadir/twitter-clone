@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import Http404, get_object_or_404, redirect, render
 from django.urls.base import reverse
 from django.views import View
 from django.contrib.auth import decorators
@@ -19,9 +19,10 @@ class Create(mixins.ProfileRequired, View):
         return render(req, self.template_name, ctx)
 
     def post(self, req: request.HttpRequest, *args, **kwargs):
-        mentions = json.loads(req.POST.get('mentions'))
+        mentions = json.loads(req.POST.get('mentions') or "[]")
         ctx = {}
         form = forms.TweetForm(req.POST)
+        print(form.data)
         image = req.FILES.get('image')
         video = req.FILES.get('video')
         ctx['form'] = form
@@ -38,7 +39,10 @@ class Create(mixins.ProfileRequired, View):
         if not form.is_valid():
             ctx['error'] = "invalid input"
             return render(req, self.template_name, ctx)
-        data = form.cleaned_data #text, reply_mode, mentions
+        data = form.cleaned_data #text, reply_mode, mentions, reply_to
+        if data.get('reply_to'):
+            if data.get('reply_to').mentions.filter(id=req.user.id).first() == None and data.get('reply_to').user != req.user:
+                return response.HttpResponse("not allowed to reply")
         if re.match('^\s+$', data['text']) or len(data['text']) <= 0:
             if not (image or video):
                 ctx['error'] = "provide at least one of text, video or image"

@@ -3,6 +3,27 @@
 @tailwind utilities;
 @tailwind variants;
 
+.reply_section{
+	display: grid;
+	grid-template-rows: fit-content(30px) fit-content(1fr);
+	grid-template-columns: 5rem 1fr;
+	grid-template-areas: 
+		"_ reply_to"
+		"profile textarea";
+}
+
+.reply_to{
+	grid-area: reply_to;
+}
+
+.reply_profile{
+	grid-area: profile;
+}
+
+.reply_input{
+	grid-area: textarea;
+}
+
 .no-scrollbar{
 	scrollbar-width: none;
 	-ms-overflow-style: none;

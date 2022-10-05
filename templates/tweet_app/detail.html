@@ -1,4 +1,5 @@
 {% extends 'skeleton/tulang.html' %}
+{% load core %}
 {% block body %}
 <div class="bg-gray-300">
 	<div class="max-w-xl m-auto bg-white min-h-screen">
@@ -27,31 +28,219 @@
 					<button><i class="fal fa-ellipsis text-xl"></i></button>
 				</div>
 			</div>
+			{% if tweet.reply_to %}
+			<div class="text-xs">
+				<span class="text-gray-500">Replying to </span><a href="{% url 'tweet:detail' tweet.reply_to.id %}" class="text-blue-400">@{{ tweet.reply_to.user }}</a>
+			</div>
+			{% endif %}
 			<p class="text-xl">
 			{{ tweet.text }}
 			</p>
 			{% if tweet.media_set.count %}
 			<div class="py-3">
 				{% for media in tweet.media_set.all %}
-					{% if media.content_type == "image/jpeg" or "image/png" %}
-					<div class="w-full rounded-xl max-h-80 overflow-hidden">
+					{% if media.content_type == "image/jpeg" or media.content_type == "image/png" %}
+					<div class="w-full rounded-xl max-h-80 overflow-hidden ring-[1px] ring-gray-300 mt-2">
 						<img class="w-full h-full object-cover" src="{{ media.file.url }}">
+					</div>
+					{% elif media.content_type == "video/mp4" or media.content_type == "video/3gp" %}
+					<div class="w-full rounded-xl max-h-80 overflow-hidden ring-[1px] ring-gray-300 mt-2">
+						<video controls class="w-full h-full object-cover" src="{{ media.file.url }}"></video>
 					</div>
 					{% endif %}			
 				{% endfor %}
 			</div>
 			{% endif %}
-			<div class="p-3 flex items-center gap-1 text-gray-500">
-				<span>
-					{{ tweet.created_at|date:"g:i A" }}
-				</span>
-				<div class="border rounded-full border-gray-400"></div>
-				<span>
-					{{ tweet.created_at|date:"M d, o" }}
-				</span>
+			<div class="divide-y">
+				<div class="p-3 flex items-center gap-1 text-gray-500">
+					<span>
+						{{ tweet.created_at|date:"g:i A" }}
+					</span>
+					<div class="border rounded-full border-gray-400"></div>
+					<span>
+						{{ tweet.created_at|date:"M d, o" }}
+					</span>
+				</div>
+				<div class="h-10 flex p-2 gap-3">
+					<div class="text-xs h-full flex items-center justify-center w-fit gap-1">
+						<b>{{ tweet.retweets.all|length }}</b><span class="text-gray-500">Retweets</span>
+					</div>
+					<div class="text-xs h-full flex items-center justify-center w-fit gap-1">
+						<b>{{ tweet.replies.all|length }}</b><span class="text-gray-500">Replies</span>
+					</div>
+					<div class="text-xs h-full flex items-center justify-center w-fit gap-1">
+						<b>{{ tweet.likes.all|length }}</b><span class="text-gray-500">Likes</span>
+					</div>
+				</div>
+				<div class="h-10 w-full flex justify-evenly">
+					{% tweet_liked_by tweet request.user as liked %}
+					<button onclick=""><i class="fal fa-comment text-lg"></i> </button>
+					<button><i class="fal fa-arrows-retweet"></i> </button>
+					<button onclick="like('{% url 'tweet:like' tweet.id %}', this)"><i class="{% if liked %}fas{% else %}fal{% endif %} fa-heart text-lg"></i></button>
+					<button><i class="fal fa-share-nodes text-lg"></i></button>
+				</div>
+				<!-- reply section -->
+				<form method="post" enctype="multipart/form-data" action="{% url 'tweet:create' %}">
+					<input type="hidden" name="reply_mode" value="{{ tweet.reply_mode }}">
+					<input type="hidden" name="reply_to" value="{{ tweet.id }}">
+					<div onclick="show_reply(this)" class="reply_section py-2">
+						<div class="reply_to  hidden text-xs">Replying to <a class="text-blue-400" href="{% url 'profile:detail' tweet.user.profile.id %}">@{{ tweet.user.username }}</a></div>
+						<div class="reply_profile flex flex-col items-center">
+							<div class="bg-gray-300 ring-[1px] w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
+								{% if request.user.profile.photo %}
+								<img class="w-full h-full object-cover" src="{{ request.user.profile.photo.url }}">
+								{% else %}
+								<i class="fas fa-user text-white text-2xl"></i>
+								{% endif %}
+							</div>
+						</div>
+						<div class="reply_input flex items-center">
+							<textarea name="text" class="w-full h-fit outline-none text-lg resize-none" rows="1" placeholder="Tweet your reply"></textarea>
+							<div class="flex items-center justify-between">
+								<div class="utils hidden text-blue-400">
+									<label>
+										<input name="image" type="file" class="hidden">
+										<i class="fal fa-image"></i>
+									</label>
+									<label>
+										<input name="video" type="file" class="hidden">
+										<i class="fal fa-video"></i>
+									</label>
+								</div>
+								<button class="px-4 py-1 rounded-full bg-blue-300 text-white font-bold">Reply</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- reply section -->
+				{% for reply in tweet.replies.all %}
+				<div class="p-3">
+					<div class="flex gap-3">
+						<div class="flex flex-col items-center w-fit">
+							<div class="w-12 h-12 rounded-full ring-[1px] bg-gray-300 flex-shrink-0 flex items-center justify-center overflow-hidden">
+								{% if reply.user.profile.photo %}
+								<img class="w-full h-full object-cover" src="{{ reply.user.profile.photo.url }}">
+								{% else %}
+								<i class="fas fa-user text-white text-2xl"></i>
+								{% endif %}
+							</div>
+							{% if reply.replies.all|length > 0 %}
+							<div class="h-full w-[2px] bg-gray-300 my-1"></div>
+							{% endif %}
+						</div>
+						<div class="w-full">
+							<div class="w-full flex justify-between">
+								<div class="flex gap-1 w-full">
+									<h4 class="font-bold">{{ reply.user.profile.name }}</h4>
+									<span class="text-gray-500">@{{ reply.user.username }}</span>
+								</div>
+								<button><i class="fal fa-ellipsis"></i></button>
+							</div>
+							<a href="{% url 'tweet:detail' reply.id %}">
+								<!-- {% if reply.reply_to %} -->
+								<!-- <div class="text-xs"> -->
+								<!-- 	<span class="text-gray-500">Replying to </span><a href="{% url 'tweet:detail' reply.reply_to.id %}" class="text-blue-400">@{{ reply.reply_to.user }}</a> -->
+								<!-- </div> -->
+								<!-- {% endif %} -->
+								<p class="text-sm">{{ reply.text }}</p>
+								<div class="w-full">
+									{% for media in reply.media_set.all %}
+										{% if media.content_type == "image/jpeg" or media.content_type == "image/png" %}
+										<div class="w-full rounded-xl max-h-80 overflow-hidden ring-[1px] ring-gray-300 mt-2">
+											<img class="w-full h-full object-cover" src="{{ media.file.url }}">
+										</div>
+										{% elif media.content_type == "video/mp4" or media.content_type == "video/3gp" %}
+										<div class="w-full rounded-xl max-h-80 overflow-hidden ring-[1px] ring-gray-300 mt-2">
+											<video controls class="w-full h-full object-cover" src="{{ media.file.url }}"></video>
+										</div>
+										{% endif %}			
+									{% endfor %}
+								</div>
+							</a>
+							<div class="flex h-10 items-center justify-between child:w-full">
+								{% tweet_liked_by reply request.user as liked %}
+								<button onclick="location.assign('{% url 'tweet:detail' reply.id %}')"><i class="fal fa-comment"></i> <span class="text-xs">{{ reply.replies.all|length }}</span></button>
+								<button><i class="fal fa-arrows-retweet"></i> <span class="text-xs">{{ reply.retweets.all|length }}</span></button>
+								<button onclick="like('{% url 'tweet:like' reply.id %}', this)"><i class="{% if liked %}fas{% else %}fal{% endif %} fa-heart"></i> <span class="text-xs total">{{ reply.likes.all|length }}</span></button>
+								<button><i class="fal fa-share-nodes"></i></button>
+							</div>
+						</div>
+					</div>
+					{% if reply.replies.count %}
+					<!-- reply reply -->
+					<div class="flex gap-3">
+						<div class="flex flex-col items-center w-fit">
+							<div class="w-12 h-12 rounded-full ring-[1px] bg-gray-300 flex-shrink-0 flex items-center justify-center overflow-hidden">
+								{% if reply.replies.first.user.profile.photo %}
+								<img class="w-full h-full object-cover" src="{{ reply.replies.first.user.profile.photo.url }}">
+								{% else %}
+								<i class="fas fa-user text-white text-2xl"></i>
+								{% endif %}
+							</div>
+						</div>
+						<div class="w-full">
+							<div class="w-full flex justify-between">
+								<div class="flex gap-1 w-full">
+									<h4 class="font-bold">{{ reply.replies.first.user.profile.name }}</h4>
+									<span class="text-gray-500">@{{ reply.replies.first.user.username }}</span>
+								</div>
+								<button><i class="fal fa-ellipsis"></i></button>
+							</div>
+							<a href="{% url 'tweet:detail' reply.replies.first.id %}">
+								<!-- {% if reply.replies.first.reply_to %} -->
+								<!-- <div class="text-xs"> -->
+								<!-- 	<span class="text-gray-500">Replying to </span><a href="{% url 'tweet:detail' reply.replies.first.reply_to.id %}" class="text-blue-400">@{{ reply.replies.first.reply_to.user }}</a> -->
+								<!-- </div> -->
+								<!-- {% endif %} -->
+								<p class="text-sm">{{ reply.replies.first.text }}</p>
+								<div class="w-full mt-2">
+									{% for media in reply.replies.first.media_set.all %}
+									{% if media.content_type == "image/jpeg" or "image/png" %}
+									<div class="w-full rounded-xl max-h-80 overflow-hidden ring-[1px] ring-gray-300">
+										<img class="w-full h-full object-cover" src="{{ media.file.url }}">
+									</div>
+									{% endif %}			
+									{% endfor %}
+								</div>
+							</a>
+							<div class="flex h-10 items-center justify-between child:w-full">
+								{% tweet_liked_by reply.replies.first request.user as liked %}
+								<button onclick="location.assign('{% url 'tweet:detail' reply.replies.first.id %}')"><i class="fal fa-comment"></i> <span class="text-xs">{{ reply.replies.first.replies.all|length }}</span></button>
+								<button><i class="fal fa-arrows-retweet"></i> <span class="text-xs">{{ reply.replies.first.retweets.all|length }}</span></button>
+								<button onclick="like('{% url 'tweet:like' reply.replies.first.id %}', this)"><i class="{% if liked %}fas{% else %}fal{% endif %} fa-heart"></i> <span class="text-xs total">{{ reply.replies.first.likes.all|length }}</span></button>
+								<button><i class="fal fa-share-nodes"></i></button>
+							</div>
+						</div>
+					</div>
+					<!-- reply reply -->
+					{% endif %}
+				</div>
+				{% endfor %}
 			</div>
-			<div class="h-10 w-full border-y"></div>
 		</div>
 	</div>
 </div>
+<script>
+	function like(url, el){
+			let total = el.querySelector('.total')
+			let icon = el.querySelector('i')
+			fetch(url).then(r=>r.json()).then(res=>{
+				if (res.action == 'add'){
+						total.innerHTML = parseInt(total.innerHTML)+1
+						icon.classList.replace('fal', 'fas')
+					}
+				else{
+						total.innerHTML = parseInt(total.innerHTML)-1
+						icon.classList.replace('fas', 'fal')
+					}
+				})
+	}
+
+	function show_reply(e){
+			e.querySelector('.reply_to').classList.remove("hidden")
+			e.querySelector('.reply_input').classList.remove("flex")
+			e.querySelector('.reply_input').querySelector('textarea').style.height = "6rem"
+			e.querySelector('.reply_input').querySelector('.utils').classList.remove("hidden")
+	}
+</script>
 {% endblock %}

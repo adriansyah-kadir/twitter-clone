@@ -42,8 +42,8 @@ class Profile(models.Model):
 class Tweet(models.Model):
     user = models.ForeignKey(User, models.CASCADE)
     text = models.TextField(null=True, blank=True)
-    likes = models.ManyToManyField(User, "posts_liked")
-    shares = models.ManyToManyField(User, "posts_shared")
+    likes = models.ManyToManyField(User, "posts_liked", blank=True)
+    shares = models.ManyToManyField(User, "posts_shared", blank=True)
     mentions = models.ManyToManyField(User, 'tweet_mentions', blank=True)
     reply_mode = models.CharField(
         max_length=10,
@@ -54,6 +54,8 @@ class Tweet(models.Model):
         ),
         default='everyone'
     )
+    reply_to = models.ForeignKey("self", models.CASCADE, blank=True, null=True, related_name='replies')
+    retweet = models.ForeignKey("self", models.CASCADE, blank=True, null=True, related_name='retweets')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -69,13 +71,6 @@ class Comment(models.Model):
     tweet = models.ForeignKey(Tweet, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)
     text = models.TextField()
-
-
-class Reply(models.Model):
-    user = models.ForeignKey(User, models.CASCADE)
-    comment = models.ForeignKey(Comment, models.CASCADE)
-    text = models.TextField()
-
 
 class Media(models.Model):
     tweet = models.ForeignKey(Tweet, models.CASCADE)

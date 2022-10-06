@@ -7,10 +7,10 @@
 				<button><i class="far fa-arrow-left text-lg"></i></button>
 				<span class="font-bold">Update Profile</span>
 			</div>
-			<button class="px-4 py-1 bg-black text-white rounded-full">Save</button>
+			<button onclick="document.querySelector('form#profile').submit()" class="px-4 py-1 bg-black text-white rounded-full">Save</button>
 		</div>
 		<div class="p-3 pt-0">
-			<form method="post" action="{% url 'profile:create' %}" enctype="multipart/form-data">
+			<form id="profile" method="post" action="{% url 'profile:update' %}" enctype="multipart/form-data">
 				<div class="w-full bg-gray-400 h-40 flex items-center justify-center">
 					<label class="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center">
 						<input name="cover_photo" type="file" class="hidden">
@@ -20,7 +20,7 @@
 				<div class="relative h-10 mb-5">
 					<div class="w-20 h-20 ring-white ring bg-gray-300 rounded-full absolute bottom-0 left-5 flex items-center justify-center">
 						<label class="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center">
-							<input name="cover_photo" type="file" class="hidden">
+							<input name="photo" type="file" class="hidden">
 							<i class="fal fa-camera text-white text-xl"></i>
 						</label>
 					</div>
@@ -30,9 +30,15 @@
 					<span class="absolute left-2 top-2 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 transition-all peer-placeholder-shown:text-lg text-sm text-blue-500 peer-placeholder-shown:text-gray-500">Name</span>
 				</label>
 				<label class="ring-[1px] ring-gray-300 hover:ring-[1.5px] hover:ring-blue-400  py-4 px-2 rounded-md relative w-full block mb-5">
-					<textarea class="outline-none w-full h-full peer py-2" placeholder=" "></textarea>
+					<textarea name="bio" class="outline-none w-full h-full peer py-2" placeholder=" "></textarea>
 					<span class="absolute left-2 top-2 peer-focus:top-2 peer-focus:translate-y-0 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 transition-all peer-placeholder-shown:text-lg text-sm text-blue-500 peer-placeholder-shown:text-gray-500 peer-focus:text-sm peer-focus:text-blue-500">Bio</span>
 				</label>
+				<div class="flex items-center text-sm gap-1">
+					<span>Date Birth</span>
+					<div class="h-0 w-0 border border-gray-300 rounded-full"></div>
+					<label class="text-blue-400" for="hh">Change</label>
+				</div>
+				<input name="date_of_birth" class="border-none bg-transparent outline-none w-fit text-2xl font-bold" type="date" id="hh" value="{{ profile.date_of_birth|date:"Y-m-d" }}">
 			</form>
 		</div>
 	</div>

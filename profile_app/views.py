@@ -22,7 +22,11 @@ class Update(mixins.ProfileRequired, View):
     template_name = "profile_app/update.html"
     def get(self, req: request.HttpRequest, *args, **kwargs):
         ctx = {}
+        ctx['profile'] = req.user.profile
         return render(req, self.template_name, ctx)
+
+    def post(self, req: request.HttpRequest, *args, **kwargs):
+        print(req.POST, req.FILES)
 
 class Create(View):
     template_name = "profile_app/update.html"

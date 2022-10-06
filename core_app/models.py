@@ -22,7 +22,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to="photo", null=True, blank=True)
     cover_photo = models.ImageField(upload_to="photo", null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
-    date_of_birth = models.DateTimeField(null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

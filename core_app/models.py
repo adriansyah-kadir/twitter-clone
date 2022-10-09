@@ -1,3 +1,4 @@
+from django.db.models.fields import related, related_descriptors
 from django.utils import timezone
 from django.db import models
 from django.conf import settings
@@ -18,13 +19,22 @@ class Relation(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, models.CASCADE)
-    name = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=20)
     photo = models.ImageField(upload_to="photo", null=True, blank=True)
     cover_photo = models.ImageField(upload_to="photo", null=True, blank=True)
     bio = models.TextField(null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def unfollow(self, user):
+        relation = Relation.objects.filter(following=user, follower=self.user).first()
+        if relation:
+            relation.delete()
+
+    def follow(self, user):
+        relation = Relation.objects.create(following=user, follower=self.user)
+        relation.save()
     
     @property
     def following(self):

@@ -42,6 +42,16 @@
 					</div>
 					{% if request.user == profile.user %}
 					<button onclick="location.assign('{% url 'profile:update' %}')" class="border-[1px] px-4 py-1 rounded-full font-bold hover:bg-gray-100">Set up profile</button>
+					{% elif following %}
+					<form action="{% url 'profile:unfollow' %}" method="post">
+						<input type="hidden" name="user" value="{{ profile.user.id }}">
+						<button class="border-[1px] px-4 py-1 rounded-full font-bold hover:bg-gray-100">Unfollow</button>
+					</form>
+					{% else %}
+					<form action="{% url 'profile:follow' %}" method="post">
+						<input type="hidden" name="user" value="{{ profile.user.id }}">
+						<button class="border-[1px] px-4 py-1 rounded-full bg-black text-white font-bold hover:bg-black/80">Follow</button>
+					</form>
 					{% endif %}
 				</div>
 				<div class="mt-1 mb-3">

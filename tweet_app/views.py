@@ -40,9 +40,15 @@ class Create(mixins.ProfileRequired, View):
             ctx['error'] = "invalid input"
             return render(req, self.template_name, ctx)
         data = form.cleaned_data #text, reply_mode, mentions, reply_to
-        if data.get('reply_to'):
-            if data.get('reply_to').mentions.filter(id=req.user.id).first() == None and data.get('reply_to').user != req.user:
-                return response.HttpResponse("not allowed to reply")
+        reply_to = data.get('reply_to')
+        if reply_to and reply_to.user != req.user:
+            if reply_to.reply_mode == 'mentioned':
+                if reply_to.mentions.filter(id=req.user.id).first() == None:
+                    return response.HttpResponse("only mentioned can reply")
+            if reply_to.reply_mode == 'following':
+                if reply_to.user.profile.following.filter(id=req.user.id).first() == None:
+                    return response.HttpResponse("only followed can reply")
+
         if re.match('^\s+$', data['text']) or len(data['text']) <= 0:
             if not (image or video):
                 ctx['error'] = "provide at least one of text, video or image"

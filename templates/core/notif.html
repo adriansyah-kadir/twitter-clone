@@ -1,0 +1,46 @@
+{% extends 'skeleton/base.html' %}
+{% block utils %}
+<div class="px-5 w-full font-bold">Notification</div>
+<button><i class="fal fa-gear"></i></button>
+{% endblock %}
+{% block body %}
+	<div class="w-full">
+		<!-- tab -->
+		<div class="overflow-hidden">
+			<nav class="w-full flex items-center justify-evenly child:h-14 [&>*>div]:min-w-[5rem] 4child:flex child:items-center child:justify-center border-b child:text-sm">
+				<label>
+					<input class="hidden peer" type="radio" name="tab" checked>
+					<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 peer-checked:text-black text-gray-500 font-bold">
+						All
+					</div>
+				</label>
+				<label>
+					<input class="hidden peer" type="radio" name="tab">
+					<div class="h-full ring-b flex items-center justify-center before:peer-checked:h-1 peer-checked:text-black text-gray-500 font-bold">
+						Mentions
+					</div>
+				</label>
+			</nav>
+			<ul id="tabs" class="w-full child:w-full flex child:flex-shrink-0 transition-all">
+				<li>Elit inventore recusandae sapiente doloribus aut Sequi soluta voluptatibus neque a harum Amet quae facere ullam consequatur repellat? Blanditiis obcaecati provident reiciendis porro soluta Veniam ea nemo obcaecati sint eos?</li>
+				<li>Consectetur eum corporis excepturi in commodi iste Ab cupiditate repudiandae</li>
+			</ul>
+		</div>
+		<!-- tab -->
+	</div>
+	<script>
+		let tab = document.querySelectorAll("[name='tab']")
+		tab.forEach((e, index) => {
+			e.onclick = () => {
+				if (e.checked) {
+					document.querySelector("#tabs").style.transform = `translateX(-${index * 100}%)`
+				}
+			}
+		})
+	</script>
+{% endblock %}
+{% block nav %}
+	<div class="fixed bottom-0 left-1/2 -translate-x-1/2">
+		{% include 'skeleton/nav.html' %}
+	</div>
+{% endblock %}

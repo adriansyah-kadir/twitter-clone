@@ -63,7 +63,7 @@
 						{% endfor %}
 					</div>
 				</a>
-				<div class="flex h-10 items-center justify-between child:w-full">
+				<div class="flex h-5 items-center justify-between child:w-full mt-2">
 					{% tweet_liked_by tweet request.user as liked %}
 					<button onclick="location.assign('{% url 'tweet:detail' tweet.id %}')"><i class="fal fa-comment"></i> <span class="text-xs">{{ tweet.replies.all|length }}</span></button>
 					<button><i class="fal fa-arrows-retweet"></i> <span class="text-xs">{{ tweet.retweets.all|length }}</span></button>
@@ -77,7 +77,7 @@
 		{% if tweet.replies.count %}
 		<div id="reply{{ forloop }}" class=" w-full flex gap-2">
 			<div onload="this.style.height=document.querySelector('#reply{{ forloop }}').getBoundingClientRect().height" class="w-12 flex flex-col items-center">
-				<div class="w-12 h-12 rounded-full flex flex-shrink-0 items-center justify-center bg-gray-300 ring-[1px] overflow-hidden">
+				<div class="mx-2 w-10 h-10 rounded-full flex flex-shrink-0 items-center justify-center bg-gray-300 ring-[1px] overflow-hidden">
 				{% if tweet.replies.first.user.profile.photo %}
 					<img class="w-full h-full object-cover" src="{{ tweet.replies.first.user.profile.photo.url }}">
 				{% else %}
@@ -152,8 +152,10 @@
 </script>
 {% endblock %}
 {% block nav %}
-<div class="absolute top-full -translate-y-[calc(100%_+_4.5rem)] right-3">
-	{% include 'skeleton/tweet-nav.html' %}
-</div>
-	{% include 'skeleton/nav.html' %}
+	<div class="fixed bottom-0 left-1/2 -translate-x-1/2">
+		<div class="absolute top-full -translate-y-[calc(100%_+_4.5rem)] right-3">
+			{% include 'skeleton/tweet-nav.html' %}
+		</div>
+		{% include 'skeleton/nav.html' %}
+	</div>
 {% endblock %}

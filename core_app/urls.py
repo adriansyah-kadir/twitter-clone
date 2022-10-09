@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("notif/", views.notif, name="notif"),
     path("search/", views.search, name='search'),
     path("profile/", include("profile_app.urls")),
     path("account/", include("account_app.urls")),

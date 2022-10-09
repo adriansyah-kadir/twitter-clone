@@ -23,3 +23,7 @@ def search(req: request.HttpRequest):
         profiles = models.Profile.objects.all()
     ctx['profiles'] = profiles
     return render(req, "core/search.html", ctx)
+
+def notif(req: request.HttpRequest, *args, **kwargs):
+    ctx = {}
+    return render(req, "core/notif.html", ctx)
